@@ -12,9 +12,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="favourites"
+        name="explore"
         options={{
-          title: 'Favourites',
+          title: 'Explore',
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="heart" color={color} />, // Heart icon
         }}
       />
@@ -25,6 +25,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <FontAwesome size={28} name="user" color={color} />, // User icon
         }}
       />
+      
     </Tabs>
   );
 }
