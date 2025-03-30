@@ -14,7 +14,14 @@ export default function Layout() {
         }}
       >
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="fav" />
+        <Stack.Screen name="fav" options={{headerShown:true,
+          headerStyle: {
+            backgroundColor: '#000',
+            borderBottomWidth: 0,
+
+          },
+          headerTitle : 'Favourites',
+        }}/>
       </Stack>
     </View>
   );

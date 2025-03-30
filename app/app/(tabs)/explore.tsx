@@ -8,7 +8,13 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function MyTabs() {
     return (
-        <Tab.Navigator>
+        <Tab.Navigator
+        screenOptions={{
+            tabBarActiveTintColor: 'white',
+            tabBarStyle: { backgroundColor: 'black',borderWidth: 0, },
+            
+          }}
+        >
             <Tab.Screen name="Popular" component={popular} />
             <Tab.Screen name="Upcoming" component={upcoming} />
             <Tab.Screen name="TopRated" component={toprated} />
