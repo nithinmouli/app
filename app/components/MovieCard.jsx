@@ -1,12 +1,25 @@
+// MovieCard.js
 import React, { useEffect } from "react";
-import { View, ImageBackground, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import {
+  View,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function MovieCard({ movie, onRemove }) {
-  const ratingColour = movie.vote_average >= 7 ? "green" : movie.vote_average >= 5 ? "orange" : "red";
+export default function MovieCard({ movie, onPress, onRemove, cardStyle }) {
+  const ratingColour =
+    movie.vote_average >= 7
+      ? "green"
+      : movie.vote_average >= 5
+      ? "orange"
+      : "red";
   const [favoriteButtonColor, setFavoriteButtonColor] = React.useState("white");
 
-  useEffect(() => { 
+  useEffect(() => {
     const checkIfFavorite = async () => {
       try {
         const existingFavorites = await AsyncStorage.getItem("favoriteMovies");
@@ -20,7 +33,7 @@ export default function MovieCard({ movie, onRemove }) {
 
     checkIfFavorite();
   }, [movie.id]);
-  
+
   const onFavoritePress = async () => {
     try {
       const existingFavorites = await AsyncStorage.getItem("favoriteMovies");
@@ -29,26 +42,42 @@ export default function MovieCard({ movie, onRemove }) {
 
       if (isFavorite) {
         // Remove from favorites
-        const updatedFavorites = favorites.filter((favMovie) => favMovie.id !== movie.id);
-        await AsyncStorage.setItem("favoriteMovies", JSON.stringify(updatedFavorites));
+        const updatedFavorites = favorites.filter(
+          (favMovie) => favMovie.id !== movie.id
+        );
+        await AsyncStorage.setItem(
+          "favoriteMovies",
+          JSON.stringify(updatedFavorites)
+        );
         setFavoriteButtonColor("white");
-        // Notify parent to remove this movie from the favorites list
         onRemove && onRemove(movie.id);
-        Alert.alert("Removed from favorites", `${movie.title} has been removed from your favorites.`);
+        Alert.alert(
+          "Removed from favorites",
+          `${movie.title} has been removed from your favorites.`
+        );
       } else {
         // Add to favorites
         favorites.push(movie);
         await AsyncStorage.setItem("favoriteMovies", JSON.stringify(favorites));
         setFavoriteButtonColor("red");
-        Alert.alert("Added to favorites", `${movie.title} has been added to your favorites.`);
+        Alert.alert(
+          "Added to favorites",
+          `${movie.title} has been added to your favorites.`
+        );
       }
     } catch (e) {
       console.log(e);
     }
   };
-  
+
+  const Container = onPress ? TouchableOpacity : View;
+
   return (
-    <View style={styles.card}> 
+    <Container
+      onPress={onPress}
+      activeOpacity={0.8}
+      style={[styles.card, cardStyle]} // Merge the custom style
+    >
       <ImageBackground
         source={{
           uri: movie.poster_path
@@ -59,21 +88,30 @@ export default function MovieCard({ movie, onRemove }) {
         imageStyle={{ borderRadius: 8 }}
       >
         <View style={styles.topOverlay}>
-          <View style={[styles.ratingContainer, { backgroundColor: ratingColour }]}> 
-            <Text style={styles.ratingText}>{parseFloat(movie.vote_average).toFixed(2) || "N/A"}</Text>
+          <View style={[styles.ratingContainer, { backgroundColor: ratingColour }]}>
+            <Text style={styles.ratingText}>
+              {parseFloat(movie.vote_average).toFixed(2) || "N/A"}
+            </Text>
           </View>
-          <TouchableOpacity style={styles.favoriteButton} onPress={onFavoritePress}>
-            <Text style={[styles.favoriteText, { color: favoriteButtonColor }]}>❤</Text>
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={onFavoritePress}
+          >
+            <Text style={[styles.favoriteText, { color: favoriteButtonColor }]}>
+              ❤
+            </Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.title}>{movie.title}</Text>
       </ImageBackground>
-    </View>
+    </Container>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    // By default, let's remove the "width: '48%'" so it doesn't stretch too large
+    // We'll let you override it with cardStyle
     width: "48%",
     aspectRatio: 2 / 3,
     borderRadius: 8,
